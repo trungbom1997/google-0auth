@@ -1,3 +1,4 @@
+import { AuthService } from './../auth.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-google-oauth20';
 import * as dotenv from 'dotenv';
@@ -8,7 +9,9 @@ const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URL } =
   process.env;
 
 export class GoogleStrategy extends PassportStrategy(Strategy) {
-  constructor(@Inject('AUTH_SERVICE') private readonly authService) {
+  constructor(
+    @Inject('AUTH_SERVICE') private readonly authService: AuthService,
+  ) {
     super({
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
@@ -22,10 +25,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     refreshToken: string,
     profile: Profile,
   ): Promise<any> {
-    const user = await this.authService.console.log(
-      accessToken,
-      refreshToken,
-      profile,
-    );
+    const user = await this.authService.validateUser({
+      email: profile?.emails[0].value,
+      displayName: profile?.displayName,
+    });
+    return user || null;  
   }
 }

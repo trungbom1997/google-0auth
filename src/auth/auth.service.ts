@@ -9,10 +9,16 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
   ) {}
-  async createUser(detail: CreateAuthDto) {
+  async validateUser(detail: CreateAuthDto) {
     const user = await this.userRepo.findOneBy({ email: detail.email });
+    
     if (user) return user;
     const result = await this.userRepo.save(detail);
     return result;
+  }
+
+  async findUser(id: number) {
+    const user = await this.userRepo.findOneBy({ id });
+    return user;
   }
 }

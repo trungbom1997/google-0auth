@@ -5,10 +5,13 @@ dotenv.config();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { getRepository } from 'typeorm';
+import { Session } from './db/models/Session.entity';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  const sessionRepository = getRepository(Session);
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
